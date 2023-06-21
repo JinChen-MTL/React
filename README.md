@@ -113,3 +113,132 @@ return <div className='log'>{
 
  ```
 
+# Lesson 31   2023/06/19
+ ```
+function App () {
+  /*
+   in react when the module has created or mapped,when you change the variable,it wont changed the module
+  */
+  let counter = 2
+
+  const addhandle = () => {
+    //++
+    alert('+1')
+    counter++
+  }
+  const lesshandle = () => {
+    //--
+    alert('-1')
+    counter--
+  }
+  return <div className='app'>
+
+    <h1>{counter}</h1>
+    <button onClick={lesshandle}>-</button>//minus 1 by 1
+    <button onClick={addhandle}>+</button>//add 1 by 1
+  </div>
+}
+ ```
+# Lesson 32 [state]
+Need to rerender.  
+**A method that can rerender the module when the variable changes?**
+ ```
+let counter=2 is useless
+ ```
+**state is a variable which registered in React and it will monitor the change of this variable,when it changes,it will auto-trigger the rerendering of the Component.**
+We use the **hook** to achieve the state
+use the **useState()** to create the state
+ ```
+import{useState} from 'react'
+const result=useState(1);
+ ```
+**console.log(result) will return a matrix as (2)[1,f]**  
+the first of the matrix is the initial value ,achieve by **let counter = result[0];**
+change the initial value will not trigger the rerendering:
+ ```
+const result=useState(1);
+let counter = result[0];
+counter++;
+<h1>{counter}</h1>  // useless
+ ```
+
+
+using the second **fn**   to change the state,and trigger the rerendering of the component
+
+```
+let setcounter=result[1]
+setcounter(counter++)
+<h1>{counter}</h1>  // useful
+```
+**a better way:**
+```
+const[count,setcount]=useState(1);
+```
+
+# Lesson 33 [state code & conditions]
+state is a variable being admin by React
+-when use setState()to change the value,it will trigger the **rerendering**----> will trigger the diff algo
+```
+if setCounter(2),it wont rerender it for the second time since its using diff algo which detect that it wont change.
+```
+update the new object,other attirbute not in it will be discarded
+```
+const[user,setuser]=useState({name:'tomy',age:18})
+setuser({name:'jerry'})
+output---> {jerry}
+```
+if want to change only one value of the object:
+```
+user.name='jerry'
+setuser(user)
+```
+if change the old state object,the addr still the same,it wont change the result.
+
+**using shallow copy**
+```
+const newuser=Object.assign({},user)//transfer user values into new empty object{}
+newuser.name='jerry';
+setUser(newuser);
+```
+**or a more better way**
+```
+setUser({...user,name:'jerry'})//the second slot will change the thing in the first slot
+```
+when using setCounter/setUser,it will change the next counter's value;its **asynchronous**
+```
+setcounter(1)
+setcounter(2)
+setcounter(3)
+setcounter(4)
+```
+
+To avoid if tow trigger are too fast,the result will trigger the diff,then even when 1 click twice it becomes 2 still;
+```
+const addHandler=()=>{
+    settimeout(
+        ()={
+            setcounter(counter+1)
+        },1000
+    )
+}
+```
+To avoid this using **Callback**
+
+```
+const addHandler=()=>{
+    settimeout(
+        ()={
+            setcounter((prevCounter:number)=>{
+                // in setstate()the callback value returns will be the new state value
+                // when it execuaes of teh call back,the react will make the new state value to be parameter to transit
+                return prevCounter+1; //react ensure it will be the newest
+            })
+                },1000
+    )
+}
+or 
+setCounter(prevState=>prevState+1)
+```
+
+
+
